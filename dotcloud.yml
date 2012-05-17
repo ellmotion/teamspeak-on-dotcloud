@@ -1,0 +1,5 @@
+ts3:
+  type: custom
+  buildscript: teamspeak/builder
+  ports:
+    TS3: udp

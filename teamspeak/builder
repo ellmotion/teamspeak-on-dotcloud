@@ -1,0 +1,21 @@
+#!/bin/bash
+
+TEAMSPEAK_DIR="$HOME/teamspeak"
+PACKAGE="http://teamspeak.gameserver.gamed.de/ts3/releases/3.0.5/teamspeak3-server_linux-amd64-3.0.5.tar.gz"
+
+cd
+
+if [ -d $TEAMSPEAK_DIR ]; then
+	echo "Teamspeak Server is already setup"
+else
+	wget "$PACKAGE"
+	mv teamspeak3-server_linux-amd64-3.0.5.tar.gz
+	cd
+	tar -xvzf teamspeak3-server_linux-amd64-3.0.5.tar.gz
+	mv teamspeak3-server_linux-amd64 ~/teamspeak
+	rm teamspeak3-server_linux-amd64-3.0.5.tar.gz
+fi
+
+cat > ~/profile << EOF
+TEAMSPEAK_DIR="$TEAMSPEAK_DIR"
+EOF
