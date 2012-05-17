@@ -10,10 +10,10 @@ if ps -aux | grep -v grep | grep ts3server_linux; then
         echo "Error"
 else
         exec /usr/bin/screen -AmdS TS3Server $TEAMSPEAK_DIR/ts3server_minimal_runscript.sh default_voice_port=$PORT_TS3 &
-	sleep 10
+	sleep 2
 	if [ ! -f "privilege_key" ]; then
-		touch privilege_key
-		grep -h token= /home/dotcloud/teamspeak/logs/* >> privilege_key
+		echo -n "The privilege key for your TeamSpeak Server is : " > privilege_key
+		grep -h token= ~/teamspeak/logs/* | cut -d= -f2 >> privilege_key
 	fi
 fi
 EOF
@@ -26,4 +26,5 @@ echo The address for TeamSpeak clients is : "$DOTCLOUD_TS3_TS3_HOST":"$DOTCLOUD_
 echo "########################################################"
 echo
 echo
+echo "\033[01mTo have you privilege key, please use this command : \"dotcloud run $DOTCLOUD_PROJECT.ts3 cat prilege_key\"\033[00m"
 echo The address for TeamSpeak clients is : "DOTCLOUD_TS3_TS3_HOST":"$DOTCLOUD_TS3_TS3_HOST" >> ~/IP_TS3_SERVER
