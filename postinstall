@@ -26,5 +26,5 @@ echo The address for TeamSpeak clients is : "$DOTCLOUD_TS3_TS3_HOST":"$DOTCLOUD_
 echo "########################################################"
 echo
 echo
-echo "\033[01mTo have you privilege key, please use this command : \"dotcloud run $DOTCLOUD_PROJECT.ts3 cat prilege_key\"\033[00m"
+echo "\033[01mTo have you privilege key, please use this command : \"dotcloud run $DOTCLOUD_PROJECT.ts3 cat privilege_key\"\033[00m"
 echo The address for TeamSpeak clients is : "DOTCLOUD_TS3_TS3_HOST":"$DOTCLOUD_TS3_TS3_HOST" >> ~/IP_TS3_SERVER
