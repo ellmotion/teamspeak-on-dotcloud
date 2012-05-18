@@ -1,5 +1,9 @@
 ts3:
   type: custom
   buildscript: teamspeak/builder
+  systempackages:
+     - lighttpd
+     - php5-cgi
   ports:
     TS3: udp
+    www: http

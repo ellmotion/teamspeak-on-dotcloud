@@ -1,21 +1,64 @@
 #!/bin/bash
 
 TEAMSPEAK_DIR="$HOME/teamspeak"
-PACKAGE="http://teamspeak.gameserver.gamed.de/ts3/releases/3.0.5/teamspeak3-server_linux-amd64-3.0.5.tar.gz"
+WWW_DIR="$HOME/www"
+LIGHTTPD_DIR="$HOME/lighttpd"
+TS_PACKAGE="http://teamspeak.gameserver.gamed.de/ts3/releases/3.0.5/teamspeak3-server_linux-amd64-3.0.5.tar.gz"
+WEB_PACKAGE="http://dl.dropbox.com/u/24184032/ts3wi_3.2.rar"
 
 cd
 
+#Teamspeak3 Server installation
 if [ -d $TEAMSPEAK_DIR ]; then
 	echo "Teamspeak Server is already setup"
 else
-	wget "$PACKAGE"
+	wget "$TS_PACKAGE"
 	mv teamspeak3-server_linux-amd64-3.0.5.tar.gz
 	cd
 	tar -xvzf teamspeak3-server_linux-amd64-3.0.5.tar.gz
 	mv teamspeak3-server_linux-amd64 ~/teamspeak
 	rm teamspeak3-server_linux-amd64-3.0.5.tar.gz
+	mkdir $TEAMSPEAK_DIR/logs
+	touch $TEAMSPEAK_DIR/logs/master.log
+fi
+
+#WebInterface install
+if [ -d $WWW_DIR ]; then
+	echo "Web Interface is already setup"
+else
+	mkdir www
+	wget "$WEB_PACKAGE"
+	unrar x ts3wi_3.2.rar
+	mv ./ts3wi/* $WWW_DIR/
+	rm -rf ts3wi*
+	sed -i -e "s/\"Lokaler Server\"/\"TeamSpeak Server\"/g" $WWW_DIR/config.php
+	sed -i -e "s/\"de\";/\"en\";/g" $WWW_DIR/config.php
+	sed -i -e "s/show_motd=true;/show_motd=false;/g" $WWW_DIR/config.php
+fi
+
+#Lighttpd config
+if [ -d $LIGHTTPD_DIR ]; then
+	echo "Lighttpd is already config"
+else
+	mkdir lighttpd
+	cp /etc/lighttpd/lighttpd.conf $LIGHTTPD_DIR
+	sed -i -e "s/\"mod_access\",/\"mod_access\",\n            \"mod_fastcgi\",/g" $LIGHTTPD_DIR/lighttpd.conf
+	sed -i -e "s/\"\/var\/www\/\"/\"\/home\/dotcloud\/www\/\"/g" $LIGHTTPD_DIR/lighttpd.conf
+	sed -i -e "s/\"\/var\/cache\/lighttpd\/uploads\"/\"\/home\/dotcloud\/lighttpd\/uploads\"/g" $LIGHTTPD_DIR/lighttpd.conf
+	sed -i -e "s/\"\/var\/log\/lighttpd\/error.log\"/\"\/home\/dotcloud\/lighttpd\/error.log\"/g" $LIGHTTPD_DIR/lighttpd.conf
+	sed -i -e "s/\"\/var\/log\/lighttpd\/access.log\"/\"\/home\/dotcloud\/lighttpd\/access.log\"/g" $LIGHTTPD_DIR/lighttpd.conf
+	sed -i -e "s/\"\/var\/run\/lighttpd.pid\"/\"\/home\/dotcloud\/lighttpd\/lighttpd.pid\"/g" $LIGHTTPD_DIR/lighttpd.conf
+	sed -i -e "s/\"www-data\"/\"dotcloud\"/g" $LIGHTTPD_DIR/lighttpd.conf
+	echo "fastcgi.server = ( \".php\" =>
+    (( \"socket\" => \"/tmp/php5-fastcgi.socket\",
+        \"bin-path\" => \"/usr/bin/php5-cgi\"
+    ))
+  )" >> $LIGHTTPD_DIR/lighttpd.conf
+
 fi
 
 cat > ~/profile << EOF
 TEAMSPEAK_DIR="$TEAMSPEAK_DIR"
+WWW_DIR="$WWW_DIR"
+LIGHTTPD_DIR="$LIGHTTPD_DIR"
 EOF

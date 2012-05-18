@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Modify Server admin password
+SERVERADMIN_PASSWORD="Enter_Your_Password_Here" #with quote
+
+
+
 # Source the INSTALL_DIRECTORY variable
 [ -f ~/profile ] && . ~/profile
 
@@ -9,12 +14,14 @@ cat > ~/run <<EOF
 if ps -aux | grep -v grep | grep ts3server_linux; then
         echo "Error"
 else
-        exec /usr/bin/screen -AmdS TS3Server $TEAMSPEAK_DIR/ts3server_minimal_runscript.sh default_voice_port=$PORT_TS3 &
+        $TEAMSPEAK_DIR/ts3server_minimal_runscript.sh default_voice_port=$PORT_TS3 serveradmin_password=$SERVERADMIN_PASSWORD &
 	sleep 2
 	if [ ! -f "privilege_key" ]; then
 		echo -n "The privilege key for your TeamSpeak Server is : " > privilege_key
 		grep -h token= ~/teamspeak/logs/* | cut -d= -f2 >> privilege_key
 	fi
+	sed -i -e "s/\# server.port               = 81/server.port               = $PORT_WWW/g" $LIGHTTPD_DIR/lighttpd.conf
+	lighttpd -f $LIGHTTPD_DIR/lighttpd.conf
 fi
 EOF
 chmod +x ~/run
@@ -23,6 +30,8 @@ echo
 echo
 echo "########################################################"
 echo The address for TeamSpeak clients is : "$DOTCLOUD_TS3_TS3_HOST":"$DOTCLOUD_TS3_TS3_PORT" 
+echo
+echo Don\'t forget your serveradmin password : "$SERVERADMIN_PASSWORD"
 echo "########################################################"
 echo
 echo
